@@ -1,4 +1,4 @@
-from app import db 
+from app import db, app 
 
 #todo-filter based on rating, price
 class Service(db.Model):
