@@ -7,4 +7,4 @@ import config
 db = SQLAlchemy(app)
 
 import models
-
+import routes

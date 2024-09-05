@@ -1,7 +1,6 @@
-from flask_sqlalchemy import SQLAlchemy
 from app import db 
 
-
+#todo-filter based on rating, price
 class Service(db.Model):
     __tablename__ = "service"
     id = db.Column(db.Integer, primary_key=True)
@@ -13,7 +12,6 @@ class Service(db.Model):
     banner = db.Column(db.String(200), nullable=False)
     provider = db.Column(db.Integer, db.ForeignKey("proffessional.id"), nullable=False)
 
-
 class Customer(db.Model):
     __tablename__ = "customer"
     id = db.Column(db.Integer, primary_key=True)
@@ -22,6 +20,7 @@ class Customer(db.Model):
     password_hash = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(50), nullable=False, unique=True)
     profile_picture = db.Column(db.String(200), nullable=True)
+    address = db.Column(db.String(300), nullable=False)
 
 class Proffessional(db.Model):
     __tablename__ = "proffessional"
@@ -42,4 +41,5 @@ class Request(db.Model):
     date_of_completion = db.Column(db.Date, nullable=True)
     service_status = db.Column(db.Enum("completed", "cancelled", "inprogress", "assigned", "closed", "rejected", "failed"), nullable=False)
 
-
+with app.app_context():
+    db.create_all()
