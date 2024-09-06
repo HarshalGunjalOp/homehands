@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block style %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+
+{% block title %}Home{% endblock %}
+
+{% block body %}
+    <main class="main">        
+        <div class="hero">
+            <h1 class="hero-text gradient-text">A-Z household services</h1>
+            <p class="hero-paragraph">At HomeHands, we provide a one-stop solution for all your household problems! Have a problem? Just look up a service and you're good to go! 🚀</p>
+            <button class="hero-button btn roundeed-3"><a href="/signup"">Get Started</a></button>
+        </div>
+        <img src="{{ url_for('static', filename='images/gradient1.png') }}" alt="Gradient 1" class="gradient">
+    </main>
+{% endblock %}

@@ -41,5 +41,6 @@ class Request(db.Model):
     date_of_completion = db.Column(db.Date, nullable=True)
     service_status = db.Column(db.Enum("completed", "cancelled", "inprogress", "assigned", "closed", "rejected", "failed"), nullable=False)
 
+
 with app.app_context():
     db.create_all()

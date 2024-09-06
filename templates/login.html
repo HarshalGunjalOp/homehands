@@ -1,4 +1,12 @@
 {% extends 'base.html' %}
+
+{% block title %}
+Login to Homehands
+{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+{% endblock %}
+
 {% block body %}
-<h1>Login Form</h1>
 {% endblock %}

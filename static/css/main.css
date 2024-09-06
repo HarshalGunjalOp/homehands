@@ -1,0 +1,125 @@
+:root {
+    --primary-red: #a41045;
+    --secondary-violet: #892066;
+    --tertiary-blue: #18457c;
+    --tertiary-pink: #E53996;
+    --white: #ffffff;
+    --primary-dark: #0A0C10;
+    --light-dark: #424345;
+    --dark-grey: #7D7E80;
+    --pink-grey: #9B8595;
+    --grey: #B9B9B9;
+    --light-grey: #D8D8D8;
+    --blue-grey: #95A1AD;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    /* background-image: linear-gradient(to right, #30cfd0 0%, #330867 100%); */
+    background-color: var(--primary-dark);
+    color: var(--white);
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Navbar CSS */
+
+.navbar-blur{
+    width: 80%;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 60px;
+    padding-left: 20px;
+    padding-right: 20px;
+
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    background-color: #37373747;
+}
+
+.navbar{
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    z-index: 1000;
+}
+
+.navbar-left{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.logo-text{
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.navbar-middle a{
+    text-decoration: none;
+    color: var(--light-grey);
+    transition: all 0.1s ease-out;
+    cursor: pointer;
+}
+
+.navbar-middle a:hover{
+    transform: scale(1.1);
+    font-weight: 700;
+    color: var(--white);    
+}
+
+
+.navbar-middle{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    font-size: 0.9rem;
+}
+
+.navbar-right{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar-right button{
+    display: inline-block;
+    outline: none;
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 6px 10px;
+    border: 1px solid #222222;
+    transition: box-shadow 0.2s ease 0s, -ms-transform 0.1s ease 0s, -webkit-transform 0.1s ease 0s, transform 0.1s ease 0s;
+    background: var(--light-dark);
+    color: var(--white);
+    font-size: 0.9rem;
+    transition: all 0.5s ease;
+}
+
+.navbar-right button:hover{
+    border: var(--white) 1px solid;
+}
+
+.navbar-right a{
+    text-decoration: none;
+    color: var(--white);
+    font-size: 0.9rem;
+}
+
+.navbar-right button a{
+    font-weight: 500;
+}
+.logo{
+    height: 40px;
+    width: 40px;
+}
+
+.navbar-right{
+    gap:20px;
+}
+
+/* Footer CSS */

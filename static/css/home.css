@@ -1,0 +1,95 @@
+:root {
+    --primary-red: #a41045;
+    --secondary-violet: #892066;
+    --tertiary-blue: #18457c;
+    --tertiary-pink: #E53996;
+    --white: #ffffff;
+    --primary-dark: #0A0C10;
+    --light-dark: #424345;
+    --dark-grey: #7D7E80;
+    --pink-grey: #9B8595;
+    --grey: #B9B9B9;
+    --light-grey: #D8D8D8;
+    --blue-grey: #95A1AD;
+}
+
+.gradient{
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+
+.hero{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100%;
+    width: 40vw;
+
+}
+
+
+.hero-text{
+    font-size: 6rem;
+    font-weight:800;
+    text-transform: capitalize;
+    margin-bottom: 20px;
+    letter-spacing: -2px;
+    word-spacing: 20px;
+}
+
+.hero-paragraph{
+    font-size: 1.2rem;
+    font-weight: 300;
+    margin-bottom: 20px;
+    word-spacing: 1px;
+    color: var(--grey);
+}
+
+.gradient-text {
+    background: linear-gradient(45deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.38) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+}
+
+.hero-button{
+    padding: 10px 20px;
+    background-color: var(--primary-red);
+    margin-top: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.hero-button a{
+    text-decoration: none;
+    color: var(--white);
+}
+
+.hero-button:hover{
+    background-color: var(--secondary-violet);
+}
+
+
+.main{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 90vh;
+    width: 60vw;
+    background-color: var(--primary-dark);
+    color: var(--text);
+}
+
+.blur{
+    width: 1500px;
+    height: 200px;
+    padding-left: 20px;
+    padding-right: 20px;
+
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    background-color: #37373747;
+}
