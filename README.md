@@ -34,6 +34,22 @@ The **Household Services Application** is a platform designed to provide compreh
 - **Flask-Login**: Implemented for secure user authentication.
 - **Flask-WTF**: Used for form handling and validation.
 
+## Project Structure
+
+.
+├── app.py
+├── config.py
+├── models.py
+├── README.md
+├── requirements.txt
+├── routes.py
+├── static
+│   ├── css
+│   ├── images
+│   └── js
+└── templates
+    ├── components
+
 
 ## Database Design
 
