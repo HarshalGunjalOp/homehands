@@ -36,6 +36,7 @@ The **Household Services Application** is a platform designed to provide compreh
 
 ## Project Structure
 
+```
 .
 ├── app.py
 ├── config.py
@@ -49,7 +50,7 @@ The **Household Services Application** is a platform designed to provide compreh
 │   └── js
 └── templates
     ├── components
-
+```
 
 ## Database Design
 
