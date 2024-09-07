@@ -21,7 +21,7 @@ class Customer(UserMixin, db.Model):
     password_hash = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(50), nullable=False, unique=True)
     profile_picture = db.Column(db.String(200), nullable=True)
-    address = db.Column(db.String(300), nullable=False)
+    address = db.Column(db.String(300), nullable=True)
 
 class Proffessional(db.Model):
     __tablename__ = "proffessional"
