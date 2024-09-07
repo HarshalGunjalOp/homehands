@@ -11,6 +11,7 @@
     --grey: #B9B9B9;
     --light-grey: #D8D8D8;
     --blue-grey: #95A1AD;
+    --transparent-black: rgba(0, 0, 0, 0.7);
 }
 
 body {
@@ -20,6 +21,7 @@ body {
     background-color: var(--primary-dark);
     color: var(--white);
     font-family: 'Poppins', sans-serif;
+    overflow: hidden;
 }
 
 /* Navbar CSS */
@@ -33,9 +35,9 @@ body {
     padding-left: 20px;
     padding-right: 20px;
 
-    -webkit-backdrop-filter: blur(5px);
-    backdrop-filter: blur(5px);
-    background-color: #37373747;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    background-color: transparent;
 }
 
 .navbar{
@@ -43,6 +45,7 @@ body {
     display: flex;
     align-items: center;
     z-index: 1000;
+    border: var(--light-dark) 0.1px solid;
 }
 
 .navbar-left{
