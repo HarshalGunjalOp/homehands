@@ -1,1 +1,33 @@
 {% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css')}}">
+{% endblock %}
+
+{% block body %}
+<main>
+
+    <h1 class="gradient-text">Welcome Back</h1>
+    <img src="{{ url_for('static', filename='images/gradient3.png') }}" class="gradient" alt="">
+    <form action="" method="POST" class="login-container rounded-4 mt-5">
+        <div>
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="HomeHands Logo" class="logo">
+        </div>
+        <div class="mb-3">
+            <input type="text" class="form-control" id="username" name="username" placeholder="User Name*">
+        </div>
+        <div class="mb-3">
+            <input type="password" class="form-control" id="password" name="password" placeholder="Password*">
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="remember">
+            <label class="form-check p-0" for="remember">Remember Me</label>
+        </div>
+        <div class="text-center"><button type="submit" class="btn btn-color px-5 mb-4 w-100">Login</button></div>
+        <div id="emailHelp" class="form-text text-center">Not Registered?<a href="/register" class="fw-bold"> Create an Account</a>
+        </div>
+    </form>
+</main>
+{% endblock %}

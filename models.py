@@ -16,7 +16,8 @@ class Service(db.Model):
 class Customer(UserMixin, db.Model):
     __tablename__ = "customer"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
+    fname = db.Column(db.String(50), nullable=False)
+    lname = db.Column(db.String(50), nullable=False)
     username = db.Column(db.String(50), nullable=False, unique=True)
     password_hash = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(50), nullable=False, unique=True)
@@ -26,11 +27,12 @@ class Customer(UserMixin, db.Model):
 class Proffessional(db.Model):
     __tablename__ = "proffessional"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
+    fame = db.Column(db.String(50), nullable=False)
+    lname = db.Column(db.String(50), nullable=False)
     username = db.Column(db.String(50), nullable=False, unique=True)
     password_hash = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(50), nullable=False, unique=True)
-    profile_picture = db.Column(db.String(200), nullable=True)
+    profile_picture = db.Column(db.String(150), default='default_user.png')
 
 class Request(db.Model):
     __tablename__ = "request"

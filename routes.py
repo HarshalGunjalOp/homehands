@@ -62,13 +62,14 @@ def register():
 def register_as_customer():
     if request.method == "POST":
         username = request.form.get('username')
-        name = request.form.get('name')
+        fname = request.form.get('fname')
+        lname = request.form.get('lname')
         password = request.form.get('password')
         email = request.form.get('email')
         address = request.form.get('address')
 
-        if not username or not password or not email:
-            flash("Username, password, and email are required.", "warning")
+        if not username or not password or not email or not fname or not lname:
+            flash("Please fill all the required fields.", "warning")
             return redirect(url_for('register_as_customer'))
 
         try:
@@ -76,7 +77,8 @@ def register_as_customer():
                 username=username,
                 password_hash=generate_password_hash(password),
                 email=email,
-                name=name,
+                fname=fname,
+                lname=lname,
                 address=address
             )
             db.session.add(user)
@@ -91,6 +93,8 @@ def register_as_customer():
 @app.route('/signup-as-proffessional', methods=["GET", "POST"])
 def register_as_proffessional():
     if request.method == "POST":
+        fname = request.form.get('fname')
+        lname = request.form.get('lname')
         username = request.form.get('username')
         password = request.form.get('password')
         email = request.form.get('email')
@@ -104,6 +108,8 @@ def register_as_proffessional():
         try:
             user = Proffessional(
                 username=username,
+                fname=fname,
+                lname=lname,
                 password_hash=generate_password_hash(password),
                 email=email,
                 phone=phone,

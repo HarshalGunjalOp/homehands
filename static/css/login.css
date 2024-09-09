@@ -1,1 +1,89 @@
+:root {
+    --primary-red: #a41045;
+    --secondary-violet: #892066;
+    --tertiary-blue: #18457c;
+    --tertiary-pink: #E53996;
+    --white: #ffffff;
+    --primary-dark: #0A0C10;
+    --light-dark: #424345;
+    --dark-grey: #7D7E80;
+    --pink-grey: #9B8595;
+    --grey: #B9B9B9;
+    --light-grey: #D8D8D8;
+    --blue-grey: #95A1AD;
+    --transparent-black: rgba(0, 0, 0, 0.7);
+}
 
+.gradient-text {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.38) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    z-index: 1;
+}
+
+h1 {
+    font-size: 4rem;
+    font-weight:800;
+    text-transform: capitalize;
+    margin-bottom: 20px;
+    letter-spacing: -2px;
+    word-spacing: 20px;
+}
+
+main{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+    width: 100%;
+}
+
+.gradient {
+    position: absolute;
+    top: -300px;
+    z-index: 0;
+}
+
+.login-container {
+    width: 500px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    color: var(--white);
+    
+
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    background-color: var(--transparent-black);
+}
+
+.btn-color {
+    background-color: var(--primary-red);
+    color: var(--white);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+.btn-color:hover {
+    background-color: var(--tertiary-pink);
+}
+
+a{
+    text-decoration: none;
+}
+
+.logo {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 40px;
+}

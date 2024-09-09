@@ -21,7 +21,7 @@ body {
     background-color: var(--primary-dark);
     color: var(--white);
     font-family: 'Poppins', sans-serif;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 .flashes {
@@ -148,7 +148,7 @@ body {
 .navbar-right button a{
     font-weight: 500;
 }
-.logo{
+.navbar-logo{
     height: 40px;
     width: 40px;
 }

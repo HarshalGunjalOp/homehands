@@ -1,7 +1,7 @@
 <header>
     <nav class="navbar-blur shadow-sm navbar rounded-4">
         <div class="navbar-left">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="HomeHands Logo" class="logo">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="HomeHands Logo" class="navbar-logo">
             <span class="logo-text">HomeHands</span>
         </div>
         <div class="navbar-middle">
@@ -11,8 +11,22 @@
             <a href="/contact">Contact Us</a>
         </div>
         <div class="navbar-right">
+            {% if current_user.is_authenticated %}
+            <span>Hi {{ current_user.fname }}!</span>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <img src="{{ url_for('static', filename='images/users/' + current_user.profile_image) }}" alt="user-img" class="navbar-user" style="width: 40px; height: 40px; border-radius: 50%;">
+                </a>
+                <div class="dropdown-menu" aria-labelledby="userDropdown">
+                    <a class="dropdown-item" href="/profile">Profile</a>
+                    <a class="dropdown-item" href="/my-requests">My requests</a>
+                    <a class="dropdown-item" href="/logout">Logout</a>
+                </div>
+            </li>
+            {% else %}
             <a href="/login">Login</a>
             <button class="rounded-4"><a href="/signup">Signup</a></button>
+            {% endif %}
         </div>
     </nav>
 </header>
