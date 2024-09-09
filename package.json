@@ -1,0 +1,15 @@
+{
+    "name": "homehands",
+    "version": "1.0.0",
+    "description": "## Project Overview",
+    "main": "index.js",
+    "devDependencies": {
+        "prettier": "^3.3.3"
+    },
+    "scripts": {
+        "format": "prettier --write ."
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+}

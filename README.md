@@ -7,6 +7,7 @@ The **Household Services Application** is a platform designed to provide compreh
 ## Features
 
 ### Admin Role
+
 - **Admin Login:** The Admin can log in using a dedicated login form.
 - **Dashboard:** Admins can view, manage, and monitor all users (customers and professionals).
 - **Service Management:** Admins can create, update, and delete services, including service descriptions, pricing, and banners.
@@ -14,12 +15,14 @@ The **Household Services Application** is a platform designed to provide compreh
 - **User Management:** Admins can block/unblock users based on activity, reviews, or fraudulent behavior.
 
 ### Service Professional Role
+
 - **Registration & Login:** Service professionals can register and log in to the platform.
 - **Profile Management:** Professionals can manage their profiles, including name, experience, and service type.
 - **Service Request Management:** View, accept/reject, and close service requests assigned to them.
 - **Customer Reviews:** View customer feedback and reviews after completing a service.
 
 ### Customer Role
+
 - **Registration & Login:** Customers can register and log in to book services.
 - **Search Services:** Search for available services by name or location (e.g., pin code).
 - **Service Request:** Create, update, and close service requests.
@@ -36,7 +39,7 @@ The **Household Services Application** is a platform designed to provide compreh
 
 ## Project Structure
 
-```
+```text
 .
 ├── app.py
 ├── config.py
@@ -68,29 +71,32 @@ The application has four main models:
 ## Setup and Installation
 
 ### Prerequisites
+
 - Python 3.8+
 - SQLite
 
 ### Steps to Run Locally
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/HarshalGunjalOp/homehands.git
    cd homehands
 
 2. Setup a virtual environment:
+
    ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 
 3. Install the dependencies:
+
    ```bash
    pip install -r requirements.txt
 
 4. Start the Flask application:
+
    ```bash
    flask run
 
 5. Open your browser and navigate to `http://localhost:5000` to see the app in action.
-
-

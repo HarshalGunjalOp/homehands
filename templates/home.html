@@ -1,49 +1,78 @@
-{% extends 'base.html' %}
-
-{% block style %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
-{% endblock %}
-
-{% block title %}Home{% endblock %}
-
-{% block body %}
+{% extends 'base.html' %} {% block style %}
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/home.css') }}"
+/>
+{% endblock %} {% block title %}Home{% endblock %} {% block body %}
 <main class="main">
     <div class="hero-right">
         <h1 class="hero-text gradient-text">A-Z household services</h1>
-        <p class="hero-paragraph">At <b class="text-white">HomeHands</b>, we provide a one-stop solution for all your
-            household problems! Have a problem? Just look up a service and you're good to go! 🚀</p>
-        <button class="hero-button btn rounded-4"><a href="/services">Get Started</a></button>
+        <p class="hero-paragraph">
+            At <b class="text-white">HomeHands</b>, we provide a one-stop
+            solution for all your household problems! Have a problem? Just look
+            up a service and you're good to go! 🚀
+        </p>
+        <button class="hero-button btn rounded-4">
+            <a href="/services">Get Started</a>
+        </button>
     </div>
-    <div class=" hero-left">
-                <div id="carouselExampleSlidesOnly" class="carousel slide rounded-4" data-bs-ride="carousel">
-                    <div class="carousel-inner image-container rounded-4">
-                        <div class="carousel-item active rounded-4" data-bs-interval="3000">
-                            <img src="{{url_for('static', filename='images/ac-repair.jpg')}}" class="d-block image-1" alt="">
-                            <div class="carousel-caption d-none d-md-block card-text">
-                                <h4>AC Cleaning/Repairs</h4>
-                            </div>
-                        </div>
-                        <div class="carousel-item rounded-4" data-bs-interval="3000">
-                            <img src="{{url_for('static', filename='images/home-painting.jpg')}}" class="d-block image-1" alt="">
-                            <div class="carousel-caption d-none d-md-block card-text">
-                                <h4>Home Painting</h4>
-                            </div>
-                        </div>
-                        <div class="carousel-item rounded-4" data-bs-interval="3000">
-                            <img src="{{url_for('static', filename='images/hair-cutting.jpg')}}" class="d-block w-100" alt="...">
-                            <div class="carousel-caption d-none d-md-block card-text">
-                                <h4>Hair Cutting</h4>
-                            </div>
-                        </div>
-                        <div class="carousel-item rounded-4" data-bs-interval="3000">
-                            <img src="{{url_for('static', filename='images/many-more.jpg')}}" class="d-block w-100" alt="...">
-                            <div class="carousel-caption d-none d-md-block card-text">
-                                <h4>And Many More...</h4>
-                            </div>
-                        </div>
+    <div class="hero-left">
+        <div
+            id="carouselExampleSlidesOnly"
+            class="carousel slide rounded-4"
+            data-bs-ride="carousel"
+        >
+            <div class="carousel-inner image-container rounded-4">
+                <div
+                    class="carousel-item active rounded-4"
+                    data-bs-interval="3000"
+                >
+                    <img
+                        src="{{url_for('static', filename='images/ac-repair.jpg')}}"
+                        class="d-block image-1"
+                        alt=""
+                    />
+                    <div class="carousel-caption d-none d-md-block card-text">
+                        <h4>AC Cleaning/Repairs</h4>
                     </div>
                 </div>
+                <div class="carousel-item rounded-4" data-bs-interval="3000">
+                    <img
+                        src="{{url_for('static', filename='images/home-painting.jpg')}}"
+                        class="d-block image-1"
+                        alt=""
+                    />
+                    <div class="carousel-caption d-none d-md-block card-text">
+                        <h4>Home Painting</h4>
+                    </div>
+                </div>
+                <div class="carousel-item rounded-4" data-bs-interval="3000">
+                    <img
+                        src="{{url_for('static', filename='images/hair-cutting.jpg')}}"
+                        class="d-block w-100"
+                        alt="..."
+                    />
+                    <div class="carousel-caption d-none d-md-block card-text">
+                        <h4>Hair Cutting</h4>
+                    </div>
+                </div>
+                <div class="carousel-item rounded-4" data-bs-interval="3000">
+                    <img
+                        src="{{url_for('static', filename='images/many-more.jpg')}}"
+                        class="d-block w-100"
+                        alt="..."
+                    />
+                    <div class="carousel-caption d-none d-md-block card-text">
+                        <h4>And Many More...</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <img src="{{ url_for('static', filename='images/gradient1.png') }}" alt="" class="gradient">
+    <img
+        src="{{ url_for('static', filename='images/gradient1.png') }}"
+        alt=""
+        class="gradient"
+    />
 </main>
 {% endblock %}
