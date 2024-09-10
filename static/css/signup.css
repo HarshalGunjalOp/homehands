@@ -14,15 +14,6 @@
     --transparent-black: rgba(0, 0, 0, 0.7);
 }
 
-h1 {
-    font-size: 4rem;
-    font-weight:800;
-    text-transform: capitalize;
-    margin-bottom: 20px;
-    letter-spacing: -2px;
-    word-spacing: 20px;
-}
-
 main{
     display: flex;
     flex-direction: column;
@@ -38,15 +29,32 @@ main{
     z-index: 0;
 }
 
-.login-container {
-    width: 500px;
-    height: 500px;
+.signup-heading{
+    z-index: 1;
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.gradient-text-highlight {
+    background: linear-gradient(90deg, var(--primary-red), var(--tertiary-pink));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    z-index: 1;
+}
+
+.signup-container {
+    width: 250px;
+    height: 250px;
+    margin: 100px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 1;
     color: var(--white);
+    transition: all 0.1s ease;
     
 
     -webkit-backdrop-filter: blur(5px);
@@ -54,28 +62,20 @@ main{
     background-color: var(--transparent-black);
 }
 
-.btn-color {
-    background-color: var(--primary-red);
-    color: var(--white);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 20px;
-    transition: all 0.3s ease;
+.signup-container:hover {
+    border: 5px solid var(--primary-red);
+    transform: scale(1.1);
 }
 
-.btn-color:hover {
-    background-color: var(--tertiary-pink);
+h3{
+    text-align: center;
 }
 
-a{
+a {
     text-decoration: none;
+    cursor: pointer;
 }
 
-.logo {
-    width: 100px;
-    height: 100px;
-    margin-bottom: 40px;
+.login-text {
+    z-index: 1;
 }
-
