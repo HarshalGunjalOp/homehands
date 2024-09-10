@@ -157,4 +157,15 @@ body {
     gap:20px;
 }
 
+.dropdown-menu {
+    background-color: transparent;
+    border: 1px solid var(--light-dark);
+    color: var(--white);
+}
+
+.dropdown-toggle{
+    background-color: transparent;
+    border: none;
+    color: var(--white);
+}
 /* Footer CSS */
