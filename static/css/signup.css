@@ -65,6 +65,8 @@ main{
 .signup-container:hover {
     border: 5px solid var(--primary-red);
     transform: scale(1.1);
+    transform-origin: center;
+    will-change: transform;
 }
 
 h3{

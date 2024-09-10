@@ -118,6 +118,12 @@ border: 1px solid #ffeeba;
     gap: 20px;
 }
 
+.navbar-left a{
+    text-decoration: none;
+    color: var(--white);
+    cursor: pointer;
+}
+
 .logo-text{
     font-size: 1.2rem;
     font-weight: 600;
