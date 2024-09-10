@@ -1,9 +1,16 @@
-from flask import Flask, render_template, redirect, url_for, request, flash
-from flask_login import current_user, login_user, logout_user
+from flask import Flask, render_template, redirect, url_for, request, flash, session
+from flask_login import current_user, login_user, logout_user, login_required, LoginManager
 from models import db, Customer, Service, Proffessional, Request
 from app import app, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy.exc import SQLAlchemyError  # For handling database errors
+from sqlalchemy.exc import SQLAlchemyError
+
+login_manager = LoginManager(app)
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    flash("Please log in to view this page.", "warning")
+    return redirect(url_for('login'))
 
 @login_manager.user_loader
 def loader_user(user_id):
@@ -34,7 +41,12 @@ def login():
             try:
                 login_user(user, remember=remember)
                 flash("Logged in successfully", "success")
-                return redirect(url_for('home'))
+                next_page = request.args.get('next')
+
+                if next_page in [url_for('login'), url_for('signup'), url_for('signup_as_customer'), url_for('signup_as_proffessional')]:
+                    redirect(url_for('home'))
+
+                return redirect(next_page or url_for('home'))
             except Exception as e:
                 flash("An error occurred during login: " + str(e), "warning")
         else:
@@ -45,6 +57,7 @@ def login():
 def logout():
     try:
         logout_user()
+        session.clear()
         flash("Logged out successfully", "success")
     except Exception as e:
         flash("An error occurred during logout: " + str(e), "warning")
@@ -55,11 +68,11 @@ def home():
     return render_template("home.html")
 
 @app.route('/signup')
-def register():
+def signup():
     return render_template("signup.html")
 
 @app.route('/signup-as-customer', methods=["GET", "POST"])
-def register_as_customer():
+def signup_as_customer():
     if request.method == "POST":
         username = request.form.get('username')
         fname = request.form.get('fname')
@@ -91,7 +104,7 @@ def register_as_customer():
     return render_template("signup-as-customer.html")
 
 @app.route('/signup-as-proffessional', methods=["GET", "POST"])
-def register_as_proffessional():
+def signup_as_proffessional():
     if request.method == "POST":
         fname = request.form.get('fname')
         lname = request.form.get('lname')
@@ -146,23 +159,21 @@ def service(service_id):
     return render_template("service.html", service=service)
 
 @app.route('/my-requests')
+@login_required
 def my_requests():
-    if not current_user.is_authenticated:
-        flash("Please log in to view your requests.", "warning")
-        return redirect(url_for('login'))
     try:
         requests = Request.query.filter_by(user_id=current_user.id).all()
+
+        if not requests:
+            flash("You have no service requests at the moment.", "info")
     except SQLAlchemyError:
         flash("An error occurred while fetching your requests.", "warning")
         requests = []
     return render_template("my-requests.html", requests=requests)
 
 @app.route('/request-service/<int:service_id>')
+@login_required
 def request_service(service_id):
-    if not current_user.is_authenticated:
-        flash("Please log in to request a service.", "warning")
-        return redirect(url_for('login'))
-
     try:
         service = Service.query.get(service_id)
         if not service:

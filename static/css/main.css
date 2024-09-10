@@ -24,6 +24,20 @@ body {
     overflow-x: hidden;
 }
 
+@keyframes vibrate {
+    0% { transform: rotate(0deg); }
+    10% { transform: rotate(-1deg); }
+    20% { transform: rotate(1deg); }
+    30% { transform: rotate(0deg); }
+    40% { transform: rotate(1deg); }
+    50% { transform: rotate(-1deg); }
+    60% { transform: rotate(0deg); }
+    70% { transform: rotate(-1deg); }
+    80% { transform: rotate(1deg); }
+    90% { transform: rotate(0deg); }
+    100% { transform: rotate(-1deg); }
+  }
+
 .flashes {
     position: fixed;
     bottom: 20px;
@@ -31,30 +45,38 @@ body {
     z-index: 1000;
     list-style-type: none;
     padding: 0;
-  }
+}
   
-  .flashes li {
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    min-width: 250px;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: opacity 0.5s ease-out;
-  }
+.flashes li {
+padding: 10px;
+margin-bottom: 10px;
+border-radius: 5px;
+min-width: 250px;
+text-align: center;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+transition: opacity 0.5s ease-out;
+animation: vibrate 0.5s ease-out;
+animation-delay: 1.5s;
+}
   
-  .flashes li.success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-  }
+.flashes li.success {
+background-color: #d4edda;
+color: #155724;
+border: 1px solid #c3e6cb;
+}
   
-  .flashes li.warning {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-  }
-   
+.flashes li.warning {
+background-color: #f8d7da;
+color: #721c24;
+border: 1px solid #f5c6cb;
+}
+
+.flashes li.info {
+background-color: #fff3cd;
+color: #856404;
+border: 1px solid #ffeeba;
+}
+
 
 /* Navbar CSS */
 

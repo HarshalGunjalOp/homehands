@@ -18,12 +18,17 @@
             {% if current_user.is_authenticated %}
             <span>Hi {{ current_user.fname.capitalize() }}!</span>
             <div class="dropdown">
-                <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <button
+                    class="btn dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                >
                     <img
                         src="{{ url_for('static', filename='images/users/' + (current_user.profile_picture if current_user.profile_picture else 'default_user.svg')) }}"
                         alt="user-img"
                         class="navbar-user dropdown-toggle"
-                        style="width: 20px; height: 20px;"
+                        style="width: 20px; height: 20px"
                     />
                 </button>
                 <div class="dropdown-menu mt-3" aria-labelledby="userDropdown">
