@@ -180,13 +180,6 @@ border: 1px solid #ffeeba;
     text-decoration: none;
     color: var(--white);
     font-size: 0.9rem;
-    transition: all 0.1s ease-out;
-}
-
-.navbar-right a:hover{
-    color: var(--light-grey);
-    font-weight: 700;
-    transform: scale(1.1);
 }
 
 .navbar-right button a{
