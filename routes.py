@@ -4,6 +4,7 @@ from models import db, Customer, Service, Proffessional, Request
 from app import app, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import SQLAlchemyError
+import re
 
 login_manager = LoginManager(app)
 
@@ -20,12 +21,31 @@ def loader_user(user_id):
         flash("An error occurred while loading user.", "warning")
         return None
 
+def is_valid_email(email):
+    regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$'
+    if re.match(regex, email):
+        return True
+    else:
+        return False
+
+def is_valid_password(password):  
+    if len(password) < 8:  
+        return False  
+    if not re.search("[a-z]", password):  
+        return False  
+    if not re.search("[A-Z]", password):  
+        return False  
+    if not re.search("[0-9]", password):  
+        return False  
+    return True  
+
 @app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         username = request.form.get('username')
         password = request.form.get('password')
-        remember = True if request.form.get('remember') else False
+        role = request.form.get('role')
+        remember = True if request.form.get('remember')=="on" else False
 
         if not username or not password:
             flash("Username and password are required.", "warning")
@@ -34,7 +54,7 @@ def login():
         try:
             user = Customer.query.filter_by(username=username).first()
         except SQLAlchemyError:
-            flash("An error occurred while trying to log in.", "warning")
+            flash("User not found. Please check your details and try again.", "warning")
             return redirect(url_for('login'))
 
         if user and check_password_hash(user.password_hash, password):
@@ -81,9 +101,26 @@ def signup_as_customer():
         email = request.form.get('email')
         address = request.form.get('address')
 
+        if not is_valid_email(email):
+            flash("Invalid email address.", "warning")
+            return redirect(url_for('register_as_customer'))
+        
+        if not is_valid_password(password):
+            flash("Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.", "warning")
+            return redirect(url_for('register_as_customer'))
+
         if not username or not password or not email or not fname or not lname:
             flash("Please fill all the required fields.", "warning")
             return redirect(url_for('register_as_customer'))
+        
+        if Customer.query.filter_by(username=username).first():
+            flash("Username already taken.", "warning")
+            return redirect(url_for('register_as_customer'))
+        
+        if Customer.query.filter_by(email=email).first():
+            flash("Email already in use. Please login instead.", "warning")
+            return redirect(url_for('register_as_customer'))
+        
 
         try:
             user = Customer(
@@ -117,6 +154,26 @@ def signup_as_proffessional():
         if not username or not password or not email or not phone:
             flash("Username, password, email, and phone are required.", "warning")
             return redirect(url_for('register_as_proffessional'))
+        
+        if not is_valid_email(email):
+            flash("Invalid email address.", "warning")
+            return redirect(url_for('register_as_customer'))
+        
+        if not is_valid_password(password):
+            flash("Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.", "warning")
+            return redirect(url_for('register_as_customer'))
+
+        if not username or not password or not email or not fname or not lname:
+            flash("Please fill all the required fields.", "warning")
+            return redirect(url_for('register_as_customer'))
+        
+        if Customer.query.filter_by(username=username).first():
+            flash("Username already taken.", "warning")
+            return redirect(url_for('register_as_customer'))
+        
+        if Customer.query.filter_by(email=email).first():
+            flash("Email already in use. Please login instead.", "warning")
+            return redirect(url_for('register_as_customer'))
 
         try:
             user = Proffessional(

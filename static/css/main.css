@@ -45,6 +45,8 @@ body {
     z-index: 1000;
     list-style-type: none;
     padding: 0;
+    width: 500px;
+
 }
   
 .flashes li {
