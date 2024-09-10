@@ -162,12 +162,12 @@ def service(service_id):
 @login_required
 def my_requests():
     try:
-        requests = Request.query.filter_by(user_id=current_user.id).all()
+        requests = Request.query.filter_by(customer_id=current_user.id).all()
 
         if not requests:
             flash("You have no service requests at the moment.", "info")
-    except SQLAlchemyError:
-        flash("An error occurred while fetching your requests.", "warning")
+    except SQLAlchemyError as e:
+        flash("An error occurred while fetching your requests." + str(e), "warning")
         requests = []
     return render_template("my-requests.html", requests=requests)
 
