@@ -36,6 +36,9 @@ The **Household Services Application** is a platform designed to provide compreh
 - **SQLite**: Used for data storage.
 - **Flask-Login**: Implemented for secure user authentication.
 - **Flask-WTF**: Used for form handling and validation.
+- **Werkzeug**: For secure password hashing and protection.
+- **Flask-SQLAlchemy**: Used for ORM.
+- **Re**: Used for password and email validation using regular expressions.
 
 ## Project Structure
 
@@ -60,11 +63,11 @@ The **Household Services Application** is a platform designed to provide compreh
 The application has four main models:
 
 1. **Service**:
-   - ID, Name, Price, Time Required, Description, Banner, Provider (linked to professional).
+   - ID, Price, Time Required, Description, Banner, Provider (linked to professional).
 2. **Customer**:
-   - ID, Name, Username, Email, Password Hash, Profile Picture, Address.
+   - ID, First Name, Last Name, Username, Email, Password Hash, Profile Picture, Address, Role.
 3. **Professional**:
-   - ID, Name, Username, Email, Password Hash, Profile Picture.
+   - ID, First Name, Last Name, Username, Email, Password Hash, Profile Picture, Role.
 4. **Request**:
    - ID, Service ID, Customer ID, Professional ID, Date of Request, Date of Completion, Service Status, Remarks.
 
