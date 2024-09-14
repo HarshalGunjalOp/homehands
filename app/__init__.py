@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from os import getenv
+from os import getenv, path, makedirs
 from datetime import timedelta
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, session
@@ -11,7 +11,12 @@ db = SQLAlchemy()
 
 
 def create_app():
-    app = Flask(__name__)
+    root_dir = path.abspath(path.join(path.dirname(__file__), '..'))
+    new_instance_folder = path.join(root_dir, 'database')
+    if not path.exists(new_instance_folder):
+        makedirs(new_instance_folder)
+
+    app = Flask(__name__, instance_path=new_instance_folder)
 
     load_dotenv()
     app.config["SQLALCHEMY_DATABASE_URI"] = getenv("SQLALCHEMY_DATABASE_URI")
