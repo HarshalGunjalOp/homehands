@@ -1,17 +1,23 @@
 from flask import render_template, redirect, url_for, request, flash, session
 from flask_login import current_user, login_user, logout_user, login_required, LoginManager
-from models import db, Customer, Service, Proffessional, Request
+from models import db, Customer, Service, Professional, Request
 from app import app, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import or_
 import re
 
 login_manager = LoginManager(app)
+
+
+# /-------------------- AUTHENTICATION ROUTES --------------------/
+
 
 @login_manager.unauthorized_handler
 def unauthorized():
     flash("Please log in to view this page.", "warning")
     return redirect(url_for('login'))
+
 
 @login_manager.user_loader
 def loader_user(user_id):
@@ -21,12 +27,14 @@ def loader_user(user_id):
         flash("An error occurred while loading user.", "warning")
         return None
 
+
 def is_valid_email(email):
     regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$'
     if re.match(regex, email):
         return True
     else:
         return False
+
 
 def is_valid_password(password):  
     if len(password) < 8:  
@@ -39,20 +47,29 @@ def is_valid_password(password):
         return False  
     return True  
 
+
 @app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         username = request.form.get('username')
         password = request.form.get('password')
-        role = request.form.get('role')
+        role = request.form.get('role').lower()
         remember = True if request.form.get('remember')=="on" else False
 
         if not username or not password:
             flash("Username and password are required.", "warning")
             return redirect(url_for('login'))
-
+    
         try:
-            user = Customer.query.filter_by(username=username).first()
+            if role=="customer":
+                user = Customer.query.filter_by(username=username, role=role).first()  
+            elif role=="professional":
+                user = Professional.query.filter_by(username=username, role=role).first()
+            elif role=="admin":
+                user = Customer.query.filter_by(username=username, role=role).first()
+            else:
+                flash("Invalid role. Please select a role and try again.", "warning")
+                return redirect(url_for('login'))
         except SQLAlchemyError:
             flash("User not found. Please check your details and try again.", "warning")
             return redirect(url_for('login'))
@@ -63,7 +80,7 @@ def login():
                 flash("Logged in successfully", "success")
                 next_page = request.args.get('next')
 
-                if next_page in [url_for('login'), url_for('signup'), url_for('signup_as_customer'), url_for('signup_as_proffessional')]:
+                if next_page in [url_for('login'), url_for('signup'), url_for('signup_as_customer'), url_for('signup_as_professional')]:
                     redirect(url_for('home'))
 
                 return redirect(next_page or url_for('home'))
@@ -72,6 +89,7 @@ def login():
         else:
             flash("Invalid username or password", "warning")
     return render_template("login.html")
+
 
 @app.route('/logout')
 def logout():
@@ -83,13 +101,11 @@ def logout():
         flash("An error occurred during logout: " + str(e), "warning")
     return redirect(url_for('home'))
 
-@app.route('/')
-def home():
-    return render_template("home.html")
 
 @app.route('/signup')
 def signup():
     return render_template("signup.html")
+
 
 @app.route('/signup-as-customer', methods=["GET", "POST"])
 def signup_as_customer():
@@ -140,8 +156,9 @@ def signup_as_customer():
             flash("An error occurred during registration.", "warning")
     return render_template("signup-as-customer.html")
 
-@app.route('/signup-as-proffessional', methods=["GET", "POST"])
-def signup_as_proffessional():
+
+@app.route('/signup-as-professional', methods=["GET", "POST"])
+def signup_as_professional():
     if request.method == "POST":
         fname = request.form.get('fname')
         lname = request.form.get('lname')
@@ -153,7 +170,7 @@ def signup_as_proffessional():
 
         if not username or not password or not email or not phone:
             flash("Username, password, email, and phone are required.", "warning")
-            return redirect(url_for('register_as_proffessional'))
+            return redirect(url_for('register_as_professional'))
         
         if not is_valid_email(email):
             flash("Invalid email address.", "warning")
@@ -176,7 +193,7 @@ def signup_as_proffessional():
             return redirect(url_for('register_as_customer'))
 
         try:
-            user = Proffessional(
+            user = Professional(
                 username=username,
                 fname=fname,
                 lname=lname,
@@ -192,28 +209,16 @@ def signup_as_proffessional():
         except SQLAlchemyError:
             db.session.rollback()
             flash("An error occurred during registration.", "warning")
-    return render_template("signup-as-proffessional.html")
+    return render_template("signup-as-professional.html")
 
-@app.route('/services')
-def services():
-    try:
-        services = Service.query.all()
-    except SQLAlchemyError:
-        flash("An error occurred while fetching services.", "warning")
-        services = []
-    return render_template("services.html", services=services)
 
-@app.route('/service/<int:service_id>')
-def service(service_id):
-    try:
-        service = Service.query.get(service_id)
-        if not service:
-            flash("Service not found.", "warning")
-            return redirect(url_for('services'))
-    except SQLAlchemyError:
-        flash("An error occurred while fetching the service.", "warning")
-        return redirect(url_for('services'))
-    return render_template("service.html", service=service)
+# /-------------------- CUSTOMER ROUTES --------------------/
+
+
+@app.route('/')
+def home():
+    return render_template("home.html")
+
 
 @app.route('/my-requests')
 @login_required
@@ -227,6 +232,20 @@ def my_requests():
         flash("An error occurred while fetching your requests." + str(e), "warning")
         requests = []
     return render_template("my-requests.html", requests=requests)
+
+
+@app.route('/service/<int:service_id>')
+def service(service_id):
+    try:
+        service = Service.query.get(service_id)
+        if not service:
+            flash("Service not found.", "warning")
+            return redirect(url_for('services'))
+    except SQLAlchemyError:
+        flash("An error occurred while fetching the service.", "warning")
+        return redirect(url_for('services'))
+    return render_template("service.html", service=service)
+
 
 @app.route('/request-service/<int:service_id>')
 @login_required
@@ -245,3 +264,323 @@ def request_service(service_id):
         db.session.rollback()
         flash("An error occurred while requesting the service.", "warning")
     return redirect(url_for('services'))
+
+
+@app.route('/contact')
+def contact():
+    return render_template("contact.html")
+
+
+@app.route('/services')
+def services():
+    query = request.args.get('query', '')
+    pincode = request.args.get('pincode', '')
+
+    if query and pincode:
+        # Querying the database for services matching the query and pincode
+        services = Service.query.filter(
+            or_(
+                Service.name.ilike(f'%{query}%'),
+                Service.description.ilike(f'%{query}%')
+            ),
+            Service.pincode == pincode
+        ).all()
+    else:
+        services = []
+
+    return render_template('services.html', services=services)
+
+
+@app.route('/update-profile', methods=['GET', 'POST'])
+@login_required
+def update_profile():
+    if request.method == 'POST':
+        current_user.fname = request.form.get('fname')
+        current_user.lname = request.form.get('lname')
+        current_user.email = request.form.get('email')
+        current_user.address = request.form.get('address')
+        current_user.phone = request.form.get('phone')
+
+        try:
+            db.session.commit()
+            flash("Profile updated successfully!", "success")
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash("An error occurred while updating the profile.", "warning")
+
+    return render_template('update_profile.html')
+
+
+# /-------------------- PROFESSIONAL ROUTES --------------------/
+
+
+@app.route('/my-services')
+@login_required
+def my_services():
+    if current_user.role != "professional":
+        flash("Access denied. Professionals only.", "danger")
+        return redirect(url_for('home'))
+
+    try:
+        services = Service.query.filter_by(provider_id=current_user.id).all()
+
+        if not services:
+            flash("You have not added any services yet.", "info")
+    except SQLAlchemyError as e:
+        flash("An error occurred while fetching your services." + str(e), "warning")
+        services = []
+    return render_template("my-services.html", services=services)
+
+
+@app.route('/add-service', methods=['GET', 'POST'])
+@login_required
+def add_service():
+    if current_user.role != "professional":
+        flash("Access denied. Professionals only.", "danger")
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        name = request.form.get('name')
+        price = request.form.get('price')
+        time_required = request.form.get('time_required')
+        description = request.form.get('description')
+        banner = request.form.get('banner')
+        pincode = request.form.get('pincode')
+
+        if not name or not price or not time_required or not description or not pincode:
+            flash("All fields are required.", "warning")
+            return redirect(url_for('add_service'))
+        
+        try:
+            service = Service(
+                name=name,
+                price=price,
+                time_required_in_hours=time_required,
+                description=description,
+                banner=banner,
+                provider_id=current_user.id,
+                pincode=pincode
+            )
+            db.session.add(service)
+            db.session.commit()
+            flash("Service added successfully!", "success")
+            return redirect(url_for('my_services'))
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash("An error occurred while adding the service.", "warning")
+
+    return render_template('add_service.html')
+
+
+@app.route('/update-service/<int:service_id>', methods=['GET', 'POST'])
+@login_required
+def update_service(service_id):
+    if current_user.role != "professional":
+        flash("Access denied. Professionals only.", "danger")
+        return redirect(url_for('home'))
+
+    service = Service.query.get(service_id)
+    
+    if not service:
+        flash("Service not found.", "warning")
+        return redirect(url_for('my_services'))
+
+    if request.method == 'POST':
+        service.name = request.form.get('name')
+        service.price = request.form.get('price')
+        service.time_required_in_hours = request.form.get('time_required')
+        service.description = request.form.get('description')
+        service.banner = request.form.get('banner')
+        service.pincode = request.form.get('pincode')
+
+        try:
+            db.session.commit()
+            flash("Service updated successfully!", "success")
+            return redirect(url_for('my_services'))
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash("An error occurred while updating the service.", "warning")
+
+    return render_template('update_service.html', service=service)
+
+
+@app.route('/delete-service/<int:service_id>')
+@login_required
+def delete_service(service_id):
+    if current_user.role != "professional":
+        flash("Access denied. Professionals only.", "danger")
+        return redirect(url_for('home'))
+
+    try:
+        service = Service.query.get(service_id)
+        if service:
+            db.session.delete(service)
+            db.session.commit()
+            flash("Service deleted successfully.", "success")
+        else:
+            flash("Service not found.", "warning")
+    except SQLAlchemyError:
+        flash("An error occurred while deleting the service.", "warning")
+    
+    return redirect(url_for('my_services'))
+
+
+# /-------------------- ADMIN ROUTES --------------------/
+
+
+@app.route('/admin-dashboard')
+@login_required
+def admin_dashboard():
+    if current_user.role != "admin":
+        flash("Access denied. Admins only.", "danger")
+        return redirect(url_for('home'))
+
+    # Fetch all customers, professionals, and services for admin view
+    customers = Customer.query.all()
+    professionals = Professional.query.all()
+    services = Service.query.all()
+    
+    return render_template('admin_dashboard.html', customers=customers, professionals=professionals, services=services)
+
+
+@app.route('/admin/approve-professional/<int:professional_id>')
+@login_required
+def approve_professional(professional_id):
+    if current_user.role != "admin":
+        flash("Access denied.", "danger")
+        return redirect(url_for('home'))
+
+    try:
+        professional = Professional.query.get(professional_id)
+        if professional:
+            professional.is_verified = True  # Assuming a field 'is_verified' exists in the Professional model
+            db.session.commit()
+            flash("Professional verified successfully.", "success")
+        else:
+            flash("Professional not found.", "warning")
+    except SQLAlchemyError:
+        flash("An error occurred while approving the professional.", "warning")
+    
+    return redirect(url_for('admin_dashboard'))
+
+
+@app.route('/admin/block-user/<int:user_id>/<string:user_type>')
+@login_required
+def block_user(user_id, user_type):
+    if current_user.role != "admin":
+        flash("Access denied.", "danger")
+        return redirect(url_for('home'))
+
+    try:
+        if user_type == 'customer':
+            user = Customer.query.get(user_id)
+        else:
+            user = Professional.query.get(user_id)
+
+        if user:
+            user.is_blocked = not user.is_blocked  # Assuming a 'is_blocked' field in both models
+            db.session.commit()
+            status = "unblocked" if not user.is_blocked else "blocked"
+            flash(f"User successfully {status}.", "success")
+        else:
+            flash("User not found.", "warning")
+    except SQLAlchemyError:
+        flash("An error occurred while updating the user.", "warning")
+    
+    return redirect(url_for('admin_dashboard'))
+
+
+@app.route('/admin/create-service', methods=['GET', 'POST'])
+@login_required
+def create_service():
+    if current_user.role != "admin":
+        flash("Access denied.", "danger")
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        name = request.form.get('name')
+        price = request.form.get('price')
+        time_required = request.form.get('time_required')
+        description = request.form.get('description')
+        banner = request.form.get('banner')  # Assuming banner is an image URL or path
+        provider_id = request.form.get('provider')  # Select from available professionals
+        
+        if not name or not price or not time_required or not description or not provider_id:
+            flash("All fields are required.", "warning")
+            return redirect(url_for('create_service'))
+
+        try:
+            service = Service(
+                name=name,
+                price=price,
+                time_required_in_hours=time_required,
+                description=description,
+                banner=banner,
+                provider=provider_id  # Foreign key to Professional
+            )
+            db.session.add(service)
+            db.session.commit()
+            flash("Service created successfully!", "success")
+            return redirect(url_for('admin_dashboard'))
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash("An error occurred while creating the service.", "warning")
+    
+    professionals = Professional.query.all()
+    return render_template('create_service.html', professionals=professionals)
+
+
+@app.route('/admin/update-service/<int:service_id>', methods=['GET', 'POST'])
+@login_required
+def update_service(service_id):
+    if current_user.role != "admin":
+        flash("Access denied.", "danger")
+        return redirect(url_for('home'))
+
+    service = Service.query.get(service_id)
+    
+    if not service:
+        flash("Service not found.", "warning")
+        return redirect(url_for('admin_dashboard'))
+
+    if request.method == 'POST':
+        service.name = request.form.get('name')
+        service.price = request.form.get('price')
+        service.time_required_in_hours = request.form.get('time_required')
+        service.description = request.form.get('description')
+        service.banner = request.form.get('banner')
+        service.provider = request.form.get('provider')
+
+        try:
+            db.session.commit()
+            flash("Service updated successfully!", "success")
+            return redirect(url_for('admin_dashboard'))
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash("An error occurred while updating the service.", "warning")
+
+    professionals = Professional.query.all()
+    return render_template('update_service.html', service=service, professionals=professionals)
+
+
+@app.route('/admin/delete-service/<int:service_id>')
+@login_required
+def delete_service(service_id):
+    if current_user.role != "admin":
+        flash("Access denied.", "danger")
+        return redirect(url_for('home'))
+
+    try:
+        service = Service.query.get(service_id)
+        if service:
+            db.session.delete(service)
+            db.session.commit()
+            flash("Service deleted successfully.", "success")
+        else:
+            flash("Service not found.", "warning")
+    except SQLAlchemyError:
+        flash("An error occurred while deleting the service.", "warning")
+    
+    return redirect(url_for('admin_dashboard'))
+
+

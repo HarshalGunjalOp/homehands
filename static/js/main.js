@@ -3,7 +3,7 @@ function checkResolution() {
   const viewportWidth = window.innerWidth;
 
   // Check if the screen width or viewport width is 1920px or greater
-  if (screenWidth >= 1920 && viewportWidth >= 1920) {
+  if (screenWidth >= 1820 && viewportWidth >= 1820) {
       document.getElementById('content').style.display = 'block';
       document.getElementById('custom-message').style.display = 'none';
   } else {

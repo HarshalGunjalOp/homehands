@@ -5,3 +5,4 @@ instance/
 node_modules/
 .vscode/
 create_admin.py
+create_professional.py
