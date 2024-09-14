@@ -1,14 +1,12 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+from app import create_app
+import os
 
-app = Flask(__name__)
+app = create_app()
 
-import config
-
-db = SQLAlchemy(app)
-login_manager = LoginManager()
-login_manager.init_app(app)
-
-import models
-import routes
+if __name__ == "__main__":
+    port = int(
+        os.environ.get("PORT", 5000)
+    )  # Get the PORT environment variable, default to 5000 if not set
+    app.run(
+        host="0.0.0.0", port=port, debug=True
+    )

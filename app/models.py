@@ -1,4 +1,4 @@
-from app import db, app 
+from . import db
 from flask_login import UserMixin
 
 # TODO:filter based on rating, price
@@ -35,9 +35,18 @@ class Professional(db.Model):
     username = db.Column(db.String(50), nullable=False, unique=True)
     password_hash = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(50), nullable=False, unique=True)
-    profile_picture = db.Column(db.String(150), default='default_user.png')
+    profile_picture = db.Column(db.String(150), default='default_user.svg')
     role = db.Column(db.String(20), nullable=False, default='professional')
 
+class Admin(UserMixin, db.Model):
+    __tablename__ = "admin"
+    id = db.Column(db.Integer, primary_key=True)
+    fname = db.Column(db.String(50), nullable=False)
+    lname = db.Column(db.String(50), nullable=False)
+    username = db.Column(db.String(50), nullable=False, unique=True)
+    password_hash = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(50), nullable=False, unique=True)
+    role = db.Column(db.String(20), nullable=False, default='admin')
 
 class Request(db.Model):
     __tablename__ = "request"
@@ -49,6 +58,3 @@ class Request(db.Model):
     date_of_completion = db.Column(db.Date, nullable=True)
     service_status = db.Column(db.Enum("completed", "cancelled", "inprogress", "assigned", "closed", "rejected", "failed"), nullable=False)
 
-
-with app.app_context():
-    db.create_all()

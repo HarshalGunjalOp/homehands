@@ -76,7 +76,6 @@ The application has four main models:
 ### Prerequisites
 
 - Python 3.8+
-- SQLite
 
 ### Steps to Run Locally
 

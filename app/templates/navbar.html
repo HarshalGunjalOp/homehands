@@ -36,11 +36,11 @@
                 <div class="dropdown-menu mt-3" aria-labelledby="userDropdown">
                     <a class="dropdown-item" href="/profile">Profile</a>
                     <a class="dropdown-item" href="/my-requests">My requests</a>
-                    <a class="dropdown-item" href="/logout">Logout</a>
+                    <a class="dropdown-item" href="/auth/logout">Logout</a>
                 </div>
             </div>
             {% else %}
-            <a href="/login">Login</a>
+            <a href="/auth/login">Login</a>
             <button class="rounded-4"><a href="/signup">Signup</a></button>
             {% endif %}
         </div>
