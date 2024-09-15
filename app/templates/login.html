@@ -1,7 +1,7 @@
 {% extends 'base.html' %} {% block title %}Login{% endblock %} {% block style %}
 <link
     rel="stylesheet"
-    href="{{ url_for('static', filename='css/auth/login.css')}}"
+    href="{{ url_for('static', filename='css/login.css')}}"
 />
 {% endblock %} {% block body %}
 <main>
@@ -68,7 +68,7 @@
             </button>
         </div>
         <div id="emailHelp" class="form-text text-center">
-            Not Registered?<a href="/signup" class="fw-bold">
+            Not Registered?<a href="/auth/signup" class="fw-bold">
                 Create an Account</a
             >
         </div>
