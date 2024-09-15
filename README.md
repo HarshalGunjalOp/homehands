@@ -44,18 +44,21 @@ The **Household Services Application** is a platform designed to provide compreh
 
 ```text
 .
+├── app
+│   ├── admin.py
+│   ├── auth.py
+│   ├── customer.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── professional.py
+│   ├── static
+│   └── templates
 ├── app.py
-├── config.py
-├── models.py
+├── package.json
+├── package-lock.json
+├── project_structure.txt
 ├── README.md
-├── requirements.txt
-├── routes.py
-├── static
-│   ├── css
-│   ├── images
-│   └── js
-└── templates
-    ├── components
+└── requirements.txt
 ```
 
 ## Database Design
