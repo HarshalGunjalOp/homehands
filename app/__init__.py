@@ -48,15 +48,15 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-        role = session.get('role')  # Get the user's role from the session
+        role = session.get('role') 
         
         if role == 'customer':
-            return Customer.query.get(int(user_id))  # Load customer by ID
+            return Customer.query.get(int(user_id))
         elif role == 'professional':
-            return Professional.query.get(int(user_id))  # Load professional by ID
+            return Professional.query.get(int(user_id))
         elif role == 'admin':
-            return Admin.query.get(int(user_id))  # Load admin by ID
+            return Admin.query.get(int(user_id)) 
         else:
-            return None  # If no valid role is found, return None
+            return None 
     
     return app

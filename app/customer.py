@@ -70,7 +70,6 @@ def services():
     pincode = request.args.get('pincode', '')
 
     if query and pincode:
-        # Querying the database for services matching the query and pincode
         services = Service.query.filter(
             or_(
                 Service.name.ilike(f'%{query}%'),

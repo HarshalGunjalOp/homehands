@@ -12,7 +12,6 @@ admin = Blueprint('admin', __name__)
 @login_required
 @role_required('admin')
 def admin_dashboard():
-    # Fetch all customers, professionals, and services for admin view
     customers = Customer.query.all()
     professionals = Professional.query.all()
     services = Service.query.all()
@@ -27,7 +26,7 @@ def approve_professional(professional_id):
     try:
         professional = Professional.query.get(professional_id)
         if professional:
-            professional.is_verified = True  # Assuming a field 'is_verified' exists in the Professional model
+            professional.is_verified = True 
             db.session.commit()
             flash("Professional verified successfully.", "success")
         else:
@@ -50,7 +49,7 @@ def block_user(user_id, user_type):
             user = Professional.query.get(user_id)
 
         if user:
-            user.is_blocked = not user.is_blocked  # Assuming a 'is_blocked' field in both models
+            user.is_blocked = not user.is_blocked 
             db.session.commit()
             status = "unblocked" if not user.is_blocked else "blocked"
             flash(f"User successfully {status}.", "success")
@@ -72,8 +71,8 @@ def create_service():
         price = request.form.get('price')
         time_required = request.form.get('time_required')
         description = request.form.get('description')
-        banner = request.form.get('banner')  # Assuming banner is an image URL or path
-        provider_id = request.form.get('provider')  # Select from available professionals
+        banner = request.form.get('banner') 
+        provider_id = request.form.get('provider')  
         
         if not name or not price or not time_required or not description or not provider_id:
             flash("All fields are required.", "warning")
@@ -86,7 +85,7 @@ def create_service():
                 time_required_in_hours=time_required,
                 description=description,
                 banner=banner,
-                provider=provider_id  # Foreign key to Professional
+                provider=provider_id 
             )
             db.session.add(service)
             db.session.commit()
