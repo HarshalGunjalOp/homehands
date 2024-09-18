@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import current_user, login_required
 from .models import db, Service
 from sqlalchemy.exc import SQLAlchemyError
+from .utils import role_required
 
 
 professional = Blueprint('professional', __name__)
@@ -9,11 +10,8 @@ professional = Blueprint('professional', __name__)
 
 @professional.route('/my-services')
 @login_required
+@role_required('professional')
 def my_services():
-    if current_user.role != "professional":
-        flash("Access denied. Professionals only.", "warning")
-        return redirect(url_for('home'))
-
     try:
         services = Service.query.filter_by(provider_id=current_user.id).all()
 
@@ -27,11 +25,8 @@ def my_services():
 
 @professional.route('/add-service', methods=['GET', 'POST'])
 @login_required
+@role_required('professional')
 def add_service():
-    if current_user.role != "professional":
-        flash("Access denied. Professionals only.", "warning")
-        return redirect(url_for('home'))
-
     if request.method == 'POST':
         name = request.form.get('name')
         price = request.form.get('price')
@@ -67,11 +62,8 @@ def add_service():
 
 @professional.route('/update-service/<int:service_id>', methods=['GET', 'POST'])
 @login_required
+@role_required('professional')
 def update_service(service_id):
-    if current_user.role != "professional":
-        flash("Access denied. Professionals only.", "warning")
-        return redirect(url_for('home'))
-
     service = Service.query.get(service_id)
     
     if not service:
@@ -98,12 +90,9 @@ def update_service(service_id):
 
 
 @professional.route('/delete-service/<int:service_id>')
+@role_required('professional')
 @login_required
 def delete_service(service_id):
-    if current_user.role != "professional":
-        flash("Access denied. Professionals only.", "warning")
-        return redirect(url_for('home'))
-
     try:
         service = Service.query.get(service_id)
         if service:
@@ -113,6 +102,7 @@ def delete_service(service_id):
         else:
             flash("Service not found.", "warning")
     except SQLAlchemyError:
+        db.session.rollback()
         flash("An error occurred while deleting the service.", "warning")
     
     return redirect(url_for('my_services'))

@@ -5,6 +5,7 @@ from .models import db, Customer, Professional, Admin
 from sqlalchemy.exc import SQLAlchemyError
 import re
 
+
 auth = Blueprint('auth', __name__)
 
 

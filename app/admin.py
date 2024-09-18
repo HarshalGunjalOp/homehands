@@ -2,19 +2,16 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import current_user, login_required
 from .models import db, Customer, Professional, Service
 from sqlalchemy.exc import SQLAlchemyError
+from .utils import role_required
 
 
 admin = Blueprint('admin', __name__)
 
 
-
 @admin.route('/admin-dashboard')
 @login_required
+@role_required('admin')
 def admin_dashboard():
-    if current_user.role != "admin":
-        flash("Access denied. Admins only.", "warning")
-        return redirect(url_for('home'))
-
     # Fetch all customers, professionals, and services for admin view
     customers = Customer.query.all()
     professionals = Professional.query.all()
@@ -25,11 +22,8 @@ def admin_dashboard():
 
 @admin.route('/admin/approve-professional/<int:professional_id>')
 @login_required
+@role_required('admin')
 def approve_professional(professional_id):
-    if current_user.role != "admin":
-        flash("Access denied.", "warning")
-        return redirect(url_for('home'))
-
     try:
         professional = Professional.query.get(professional_id)
         if professional:
@@ -39,6 +33,7 @@ def approve_professional(professional_id):
         else:
             flash("Professional not found.", "warning")
     except SQLAlchemyError:
+        db.session.rollback()
         flash("An error occurred while approving the professional.", "warning")
     
     return redirect(url_for('admin_dashboard'))
@@ -46,11 +41,8 @@ def approve_professional(professional_id):
 
 @admin.route('/admin/block-user/<int:user_id>/<string:user_type>')
 @login_required
+@role_required('admin')
 def block_user(user_id, user_type):
-    if current_user.role != "admin":
-        flash("Access denied.", "warning")
-        return redirect(url_for('home'))
-
     try:
         if user_type == 'customer':
             user = Customer.query.get(user_id)
@@ -65,6 +57,7 @@ def block_user(user_id, user_type):
         else:
             flash("User not found.", "warning")
     except SQLAlchemyError:
+        db.session.rollback()
         flash("An error occurred while updating the user.", "warning")
     
     return redirect(url_for('admin_dashboard'))
@@ -72,11 +65,8 @@ def block_user(user_id, user_type):
 
 @admin.route('/admin/create-service', methods=['GET', 'POST'])
 @login_required
+@role_required('admin')
 def create_service():
-    if current_user.role != "admin":
-        flash("Access denied.", "warning")
-        return redirect(url_for('home'))
-
     if request.method == 'POST':
         name = request.form.get('name')
         price = request.form.get('price')
@@ -112,11 +102,8 @@ def create_service():
 
 @admin.route('/admin/update-service/<int:service_id>', methods=['GET', 'POST'])
 @login_required
+@role_required('admin')
 def update_service(service_id):
-    if current_user.role != "admin":
-        flash("Access denied.", "warning")
-        return redirect(url_for('home'))
-
     service = Service.query.get(service_id)
     
     if not service:
@@ -145,11 +132,8 @@ def update_service(service_id):
 
 @admin.route('/admin/delete-service/<int:service_id>')
 @login_required
+@role_required('admin')
 def delete_service(service_id):
-    if current_user.role != "admin":
-        flash("Access denied.", "warning")
-        return redirect(url_for('home'))
-
     try:
         service = Service.query.get(service_id)
         if service:
@@ -159,6 +143,7 @@ def delete_service(service_id):
         else:
             flash("Service not found.", "warning")
     except SQLAlchemyError:
+        db.session.rollback()
         flash("An error occurred while deleting the service.", "warning")
     
     return redirect(url_for('admin_dashboard'))

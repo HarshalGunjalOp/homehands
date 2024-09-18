@@ -4,7 +4,7 @@ from datetime import timedelta
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, session
 from flask_login import LoginManager
-
+from eralchemy import render_er
 
 
 db = SQLAlchemy()
@@ -39,6 +39,8 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+        render_er(db.Model, 'erd.png')
+        print("Database created successfully.")
 
     login_manager = LoginManager()
     login_manager.login_view = "auth.login"
@@ -58,9 +60,3 @@ def create_app():
             return None  # If no valid role is found, return None
     
     return app
-
-
-def create_db(app):
-    with app.app_context():
-        db.create_all()
-    print("Database created successfully.")
