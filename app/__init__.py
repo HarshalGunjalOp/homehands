@@ -6,9 +6,11 @@ from flask import Flask, session
 from flask_login import LoginManager
 from eralchemy import render_er
 from werkzeug.security import generate_password_hash
-
+import subprocess
+from flask_mail import Mail
 
 db = SQLAlchemy()
+mail = Mail()
 
 def create_default_admin():
     from .models import Admin  # Import the Admin model
@@ -46,7 +48,23 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = getenv("SQLALCHEMY_TRACK_MODIFICATIONS")
     app.config["SECRET_KEY"] = getenv("SECRET_KEY")
     app.config["REMEMBER_COOKIE_DURATION"] = timedelta(days=31)
+    app.config.update(
+        MAIL_SERVER='localhost',
+        MAIL_PORT=1025,
+        MAIL_USE_TLS=False,
+        MAIL_USE_SSL=False,
+        MAIL_USERNAME=None,
+        MAIL_PASSWORD=None,
+    )
+    print("Configured to use local SMTP debugging server.")
+
+    # Start the local SMTP debugging server
+    smtpd_command = ['python', '-m', 'aiosmtpd', '-n', '-l', 'localhost:1025']
+    subprocess.Popen(smtpd_command)
+    print("Local SMTP debugging server started.")
+
     db.init_app(app)
+    mail.init_app(app)
 
     from .admin import admin
     from .customer import customer

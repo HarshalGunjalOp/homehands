@@ -1,12 +1,17 @@
+aiosmtpd==1.4.6
 aniso8601==9.0.1
+atpublic==5.0
+attrs==24.2.0
 blinker==1.8.2
 click==8.1.7
 eralchemy==1.5.0
 Flask==3.0.3
 Flask-Login==0.6.3
+Flask-Mail==0.10.0
 Flask-RESTful==0.3.10
 Flask-SQLAlchemy==3.1.1
 Flask-WTF==1.2.1
+graphviz==0.20.3
 greenlet==3.0.3
 itsdangerous==2.2.0
 Jinja2==3.1.4

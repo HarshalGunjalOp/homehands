@@ -3,6 +3,9 @@ from flask_login import current_user, login_required
 from .models import db, Request, Service
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import or_
+from flask_mail import Message
+from os import getenv
+from . import mail
 
 
 customer = Blueprint('customer', __name__)
@@ -59,7 +62,7 @@ def request_service(service_id):
     return redirect(url_for('services'))
 
 
-@customer.route('/contact')
+@customer.route('/contact', methods=['GET', 'POST'])
 def contact():
     if request.method == 'POST':
         name = request.form.get('name')
@@ -67,14 +70,28 @@ def contact():
         subject = request.form.get('subject')
         message = request.form.get('message')
 
-        # Basic validation (could expand with regex checks, etc.)
+        # Basic validation
         if not name or not email or not subject or not message:
             flash("All fields are required.", "warning")
-            return redirect(url_for('contact'))
+            return redirect(url_for('customer.contact'))
 
-        # Here, handle form submission, like sending an email or saving to the database
-        flash("Your message has been sent successfully!", "success")
-        return redirect(url_for('contact'))
+        # Compose the email
+        msg = Message(
+            subject=f"{subject}",
+            sender=email,  # Using the sender's email directly here
+            recipients=[getenv("MAIL_USERNAME")],  # Replace with recipient email
+            body=f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}"
+        )
+        try:
+            mail.send(msg)
+            flash("Your message has been sent successfully!", "success")
+        except Exception as e:
+            flash("An error occurred while sending your message. Please try again later.", "warning")
+            print(f"Error: {e}")  # Log the error for debugging
+
+        return redirect(url_for('customer.contact'))
+
+
     return render_template("contact.html")
 
 
