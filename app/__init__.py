@@ -5,9 +5,32 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, session
 from flask_login import LoginManager
 from eralchemy import render_er
+from werkzeug.security import generate_password_hash
 
 
 db = SQLAlchemy()
+
+def create_default_admin():
+    from .models import Admin  # Import the Admin model
+    default_username = "admin"  # Choose a username for the default admin
+    default_email = "admin@example.com"
+    default_password = "securepassword"  # Choose a secure default password
+
+    # Check if the admin user already exists
+    existing_admin = Admin.query.filter_by(username=default_username).first()
+    if not existing_admin:
+        admin = Admin(
+            fname="Default",
+            lname="Admin",
+            username=default_username,
+            password_hash=generate_password_hash(default_password),
+            email=default_email
+        )
+        db.session.add(admin)
+        db.session.commit()
+        print("Default admin created.")
+    else:
+        print("Admin user already exists.")
 
 
 def create_app():
@@ -39,6 +62,7 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+        create_default_admin()
         render_er(db.Model, 'erd.png')
         print("Database created successfully.")
 

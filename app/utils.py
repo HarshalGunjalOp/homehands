@@ -8,7 +8,7 @@ def role_required(role):
         def decorated_function(*args, **kwargs):
             if current_user.role != role:
                 flash(f"Access denied. {role.capitalize()}s only.", "warning")
-                return redirect(url_for('home'))
+                return redirect(url_for('customer.home'))
             return f(*args, **kwargs)
         return decorated_function
     return decorator

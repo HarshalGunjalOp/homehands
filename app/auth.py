@@ -5,17 +5,12 @@ from .models import db, Customer, Professional, Admin
 from sqlalchemy.exc import SQLAlchemyError
 import re
 
-
 auth = Blueprint('auth', __name__)
 
-
+# Helper functions for validation
 def is_valid_email(email):
     regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$'
-    if re.match(regex, email):
-        return True
-    else:
-        return False
-
+    return re.match(regex, email) is not None
 
 def is_valid_password(password):  
     if len(password) < 8:  
@@ -28,32 +23,32 @@ def is_valid_password(password):
         return False  
     return True  
 
-
+# Routes
 @auth.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         username = request.form.get('username')
         password = request.form.get('password')
         role = request.form.get('role').lower()
-        remember = True if request.form.get('remember')=="on" else False
+        remember = request.form.get('remember') == "on"
 
         if not username or not password:
             flash("Username and password are required.", "warning")
-            return redirect(url_for('login'))
+            return redirect(url_for('auth.login'))
     
         try:
-            if role=="customer":
+            if role == "customer":
                 user = Customer.query.filter_by(username=username).first()  
-            elif role=="professional":
+            elif role == "professional":
                 user = Professional.query.filter_by(username=username).first()
-            elif role=="admin":
+            elif role == "admin":
                 user = Admin.query.filter_by(username=username).first()
             else:
                 flash("Invalid role. Please select a role and try again.", "warning")
-                return redirect(url_for('login'))
+                return redirect(url_for('auth.login'))
         except SQLAlchemyError:
             flash("User not found. Please check your details and try again.", "warning")
-            return redirect(url_for('login'))
+            return redirect(url_for('auth.login'))
 
         if user and check_password_hash(user.password_hash, password):
             try:
@@ -62,10 +57,10 @@ def login():
                 next_page = request.args.get('next')
                 session['role'] = role
 
-                if next_page in [url_for('login'), url_for('signup'), url_for('signup_as_customer'), url_for('signup_as_professional')]:
-                    redirect(url_for('home'))
+                if next_page in [url_for('auth.login'), url_for('auth.signup'), url_for('auth.signup_as_customer'), url_for('auth.signup_as_professional')]:
+                    return redirect(url_for('customer.home'))
 
-                return redirect(next_page or url_for('home'))
+                return redirect(next_page or url_for('customer.home'))
             except Exception as e:
                 flash("An error occurred during login: " + str(e), "warning")
         else:
@@ -81,7 +76,7 @@ def logout():
         flash("Logged out successfully", "success")
     except Exception as e:
         flash("An error occurred during logout: " + str(e), "warning")
-    return redirect(url_for('home'))
+    return redirect(url_for('customer.home'))
 
 
 @auth.route('/signup')
@@ -101,25 +96,24 @@ def signup_as_customer():
 
         if not is_valid_email(email):
             flash("Invalid email address.", "warning")
-            return redirect(url_for('register_as_customer'))
+            return redirect(url_for('auth.signup_as_customer'))
         
         if not is_valid_password(password):
             flash("Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.", "warning")
-            return redirect(url_for('register_as_customer'))
+            return redirect(url_for('auth.signup_as_customer'))
 
         if not username or not password or not email or not fname or not lname:
             flash("Please fill all the required fields.", "warning")
-            return redirect(url_for('register_as_customer'))
+            return redirect(url_for('auth.signup_as_customer'))
         
         if Customer.query.filter_by(username=username).first():
             flash("Username already taken.", "warning")
-            return redirect(url_for('register_as_customer'))
+            return redirect(url_for('auth.signup_as_customer'))
         
         if Customer.query.filter_by(email=email).first():
             flash("Email already in use. Please login instead.", "warning")
-            return redirect(url_for('register_as_customer'))
+            return redirect(url_for('auth.signup_as_customer'))
         
-
         try:
             user = Customer(
                 username=username,
@@ -132,7 +126,7 @@ def signup_as_customer():
             db.session.add(user)
             db.session.commit()
             flash("User registered successfully", "success")
-            return redirect(url_for('login'))
+            return redirect(url_for('auth.login'))
         except SQLAlchemyError:
             db.session.rollback()
             flash("An error occurred during registration.", "warning")
@@ -152,27 +146,23 @@ def signup_as_professional():
 
         if not username or not password or not email or not phone:
             flash("Username, password, email, and phone are required.", "warning")
-            return redirect(url_for('register_as_professional'))
+            return redirect(url_for('auth.signup_as_professional'))
         
         if not is_valid_email(email):
             flash("Invalid email address.", "warning")
-            return redirect(url_for('register_as_customer'))
+            return redirect(url_for('auth.signup_as_professional'))
         
         if not is_valid_password(password):
             flash("Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.", "warning")
-            return redirect(url_for('register_as_customer'))
+            return redirect(url_for('auth.signup_as_professional'))
 
-        if not username or not password or not email or not fname or not lname:
-            flash("Please fill all the required fields.", "warning")
-            return redirect(url_for('register_as_customer'))
-        
-        if Customer.query.filter_by(username=username).first():
+        if Professional.query.filter_by(username=username).first():
             flash("Username already taken.", "warning")
-            return redirect(url_for('register_as_customer'))
+            return redirect(url_for('auth.signup_as_professional'))
         
-        if Customer.query.filter_by(email=email).first():
+        if Professional.query.filter_by(email=email).first():
             flash("Email already in use. Please login instead.", "warning")
-            return redirect(url_for('register_as_customer'))
+            return redirect(url_for('auth.signup_as_professional'))
 
         try:
             user = Professional(
@@ -187,7 +177,7 @@ def signup_as_professional():
             db.session.add(user)
             db.session.commit()
             flash("User registered successfully", "success")
-            return redirect(url_for('login'))
+            return redirect(url_for('auth.login'))
         except SQLAlchemyError:
             db.session.rollback()
             flash("An error occurred during registration.", "warning")

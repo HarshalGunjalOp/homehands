@@ -61,6 +61,20 @@ def request_service(service_id):
 
 @customer.route('/contact')
 def contact():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        subject = request.form.get('subject')
+        message = request.form.get('message')
+
+        # Basic validation (could expand with regex checks, etc.)
+        if not name or not email or not subject or not message:
+            flash("All fields are required.", "warning")
+            return redirect(url_for('contact'))
+
+        # Here, handle form submission, like sending an email or saving to the database
+        flash("Your message has been sent successfully!", "success")
+        return redirect(url_for('contact'))
     return render_template("contact.html")
 
 

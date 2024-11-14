@@ -1,1 +1,47 @@
 {% extends 'base.html' %}
+
+{% block title %}Contact Us{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/contact.css') }}" />
+{% endblock %}
+
+{% block body %}
+<main class="main">
+    <h1 class="hero-text gradient-text">Contact Us</h1>
+    <section class="contact-section container">
+        <form action="{{ url_for('customer.contact') }}" method="POST" class="contact-form">
+            <div class="form-group mb-3">
+                <label for="name">Name</label>
+                <input type="text" name="name" id="name" class="form-control" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" class="form-control" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="subject">Subject</label>
+                <input type="text" name="subject" id="subject" class="form-control" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="message">Message</label>
+                <textarea name="message" id="message" rows="5" class="form-control" required></textarea>
+            </div>
+            <button type="submit" class="contact-button btn rounded-4 mt-3">Send Message</button>
+        </form>
+    </section>
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+    <div class="alert-container">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+</main>
+{% endblock %}
+
