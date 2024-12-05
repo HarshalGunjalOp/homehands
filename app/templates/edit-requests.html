@@ -1,0 +1,27 @@
+{% extends 'base.html' %} {% block title %}Edit Request{% endblock %} {% block
+body %}
+<h1>Edit Request</h1>
+<form action="" method="POST">
+    <div class="mb-3">
+        <label for="date_of_request" class="form-label">Date of Request</label>
+        <input
+            type="date"
+            name="date_of_request"
+            id="date_of_request"
+            value="{{ request_obj.date_of_request }}"
+            class="form-control"
+            required
+        />
+    </div>
+    <div class="mb-3">
+        <label for="remarks" class="form-label">Remarks</label>
+        <textarea name="remarks" id="remarks" class="form-control" rows="3">
+{{ request_obj.remarks }}</textarea
+        >
+    </div>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a href="{{ url_for('customer.my_requests') }}" class="btn btn-secondary"
+        >Cancel</a
+    >
+</form>
+{% endblock %}

@@ -22,8 +22,8 @@ def create_default_admin():
     existing_admin = Admin.query.filter_by(username=default_username).first()
     if not existing_admin:
         admin = Admin(
-            fname="Default",
-            lname="Admin",
+            fname="Admin",
+            lname="User",
             username=default_username,
             password_hash=generate_password_hash(default_password),
             email=default_email
@@ -50,7 +50,7 @@ def create_app():
     app.config["REMEMBER_COOKIE_DURATION"] = timedelta(days=31)
     app.config.update(
         MAIL_SERVER='localhost',
-        MAIL_PORT=1025,
+        MAIL_PORT=2525,
         MAIL_USE_TLS=False,
         MAIL_USE_SSL=False,
         MAIL_USERNAME=None,
@@ -59,7 +59,7 @@ def create_app():
     print("Configured to use local SMTP debugging server.")
 
     # Start the local SMTP debugging server
-    smtpd_command = ['python', '-m', 'aiosmtpd', '-n', '-l', 'localhost:1025']
+    smtpd_command = ['python', '-m', 'aiosmtpd', '-n', '-l', 'localhost:2525']
     subprocess.Popen(smtpd_command)
     print("Local SMTP debugging server started.")
 
@@ -70,7 +70,9 @@ def create_app():
     from .customer import customer
     from .professional import professional
     from .auth import auth
-
+    from .api import api
+    
+    app.register_blueprint(api, url_prefix='/api')
     app.register_blueprint(admin, url_prefix="/admin")
     app.register_blueprint(customer, url_prefix="/")
     app.register_blueprint(professional, url_prefix="/professional")

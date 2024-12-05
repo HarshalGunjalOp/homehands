@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import current_user, login_required
-from .models import db, Request, Service
+from .models import db, Request, Service, Review, Professional
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import or_
 from flask_mail import Message
@@ -46,20 +46,60 @@ def service(service_id):
 @customer.route('/request-service/<int:service_id>')
 @login_required
 def request_service(service_id):
+    if current_user.is_blocked:
+        flash("Your account has been blocked. Please contact support.", "warning")
+        return redirect(url_for('customer.home'))
+
     try:
         service = Service.query.get(service_id)
         if not service:
             flash("Service not found.", "warning")
             return redirect(url_for('services'))
 
-        request = Request(user_id=current_user.id, service_id=service_id)
+        request = Request(customer_id=current_user.id, service_id=service_id)
         db.session.add(request)
         db.session.commit()
-        flash("Service requested successfully", "success")
+        flash("Service requested successfully.", "success")
     except SQLAlchemyError:
         db.session.rollback()
         flash("An error occurred while requesting the service.", "warning")
     return redirect(url_for('services'))
+
+
+@customer.route('/edit-request/<int:request_id>', methods=["GET", "POST"])
+@login_required
+def edit_request(request_id):
+    request_obj = Request.query.get(request_id)
+    if not request_obj or request_obj.customer_id != current_user.id:
+        flash("Request not found or unauthorized.", "warning")
+        return redirect(url_for('customer.my_requests'))
+
+    if request.method == "POST":
+        request_obj.date_of_request = request.form.get('date_of_request')
+        request_obj.remarks = request.form.get('remarks')
+        db.session.commit()
+        flash("Request updated successfully.", "success")
+        return redirect(url_for('customer.my_requests'))
+
+    return render_template("edit-request.html", request_obj=request_obj)
+
+
+@customer.route('/close-request/<int:request_id>')
+@login_required
+def close_request(request_id):
+    request_obj = Request.query.get(request_id)
+    if not request_obj or request_obj.customer_id != current_user.id:
+        flash("Request not found or unauthorized.", "warning")
+        return redirect(url_for('customer.my_requests'))
+
+    if request_obj.service_status == "completed":
+        request_obj.service_status = "closed"
+        db.session.commit()
+        flash("Request closed successfully.", "success")
+    else:
+        flash("Only completed requests can be closed.", "warning")
+
+    return redirect(url_for('customer.my_requests'))
 
 
 @customer.route('/contact', methods=['GET', 'POST'])
@@ -111,7 +151,7 @@ def services():
     else:
         services = []
 
-    return render_template('services.html', services=services)
+    return render_template('services.html', services=services, query=query, pincode=pincode)
 
 
 @customer.route('/update-profile', methods=['GET', 'POST'])
@@ -132,3 +172,44 @@ def update_profile():
             flash("An error occurred while updating the profile.", "warning")
 
     return render_template('update_profile.html')
+
+
+@customer.route('/add-review/<int:request_id>', methods=["GET", "POST"])
+@login_required
+def add_review(request_id):
+    request_obj = Request.query.get(request_id)
+
+    if not request_obj or request_obj.customer_id != current_user.id:
+        flash("Request not found or unauthorized.", "warning")
+        return redirect(url_for('customer.my_requests'))
+
+    if request_obj.service_status != "completed":
+        flash("You can only review completed requests.", "warning")
+        return redirect(url_for('customer.my_requests'))
+
+    if request.method == "POST":
+        rating = int(request.form.get('rating'))
+        comment = request.form.get('comment', '').strip()
+
+        # Create a new review
+        review = Review(
+            request_id=request_id,
+            professional_id=request_obj.professional_id,
+            customer_id=current_user.id,
+            rating=rating,
+            comment=comment
+        )
+        db.session.add(review)
+
+        # Update professional's rating
+        professional = Professional.query.get(request_obj.professional_id)
+        reviews = Review.query.filter_by(professional_id=request_obj.professional_id).all()
+        total_rating = sum([r.rating for r in reviews]) + rating
+        count = len(reviews) + 1
+        professional.rating = total_rating / count
+
+        db.session.commit()
+        flash("Review added successfully!", "success")
+        return redirect(url_for('customer.my_requests'))
+
+    return render_template("add-review.html", request=request_obj)

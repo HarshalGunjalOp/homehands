@@ -10,7 +10,7 @@ auth = Blueprint('auth', __name__)
 # Helper functions for validation
 def is_valid_email(email):
     regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$'
-    return re.match(regex, email) is not None
+    return re.match(regex, str(email)) is not None
 
 def is_valid_password(password):  
     if len(password) < 8:  
@@ -29,42 +29,38 @@ def login():
     if request.method == "POST":
         username = request.form.get('username')
         password = request.form.get('password')
-        role = request.form.get('role').lower()
+        role = request.form.get('role')
         remember = request.form.get('remember') == "on"
 
-        if not username or not password:
-            flash("Username and password are required.", "warning")
-            return redirect(url_for('auth.login'))
-    
-        try:
-            if role == "customer":
-                user = Customer.query.filter_by(username=username).first()  
-            elif role == "professional":
-                user = Professional.query.filter_by(username=username).first()
-            elif role == "admin":
-                user = Admin.query.filter_by(username=username).first()
-            else:
-                flash("Invalid role. Please select a role and try again.", "warning")
-                return redirect(url_for('auth.login'))
-        except SQLAlchemyError:
-            flash("User not found. Please check your details and try again.", "warning")
+        # Validate input
+        if not username or not password or not role:
+            flash("All fields are required.", "warning")
             return redirect(url_for('auth.login'))
 
+        # Fetch user based on role
+        user = None
+        if role == "customer":
+            user = Customer.query.filter_by(username=username).first()
+        elif role == "professional":
+            user = Professional.query.filter_by(username=username).first()
+        elif role == "admin":
+            user = Admin.query.filter_by(username=username).first()
+
+        # Authenticate user
         if user and check_password_hash(user.password_hash, password):
-            try:
-                login_user(user, remember=remember)
-                flash("Logged in successfully", "success")
-                next_page = request.args.get('next')
-                session['role'] = role
+            if user.role != role:
+                flash("Invalid role for this account.", "warning")
+                return redirect(url_for('auth.login'))
+            if getattr(user, 'is_blocked', False):  # Check if the user is blocked
+                flash("Your account has been blocked. Please contact support.", "warning")
+                return redirect(url_for('auth.login'))
 
-                if next_page in [url_for('auth.login'), url_for('auth.signup'), url_for('auth.signup_as_customer'), url_for('auth.signup_as_professional')]:
-                    return redirect(url_for('customer.home'))
-
-                return redirect(next_page or url_for('customer.home'))
-            except Exception as e:
-                flash("An error occurred during login: " + str(e), "warning")
+            login_user(user, remember=remember)
+            session['role'] = role
+            flash("Logged in successfully!", "success")
+            return redirect(url_for('customer.home'))
         else:
-            flash("Invalid username or password", "warning")
+            flash("Invalid username or password.", "warning")
     return render_template("login.html")
 
 
@@ -143,11 +139,14 @@ def signup_as_professional():
         email = request.form.get('email')
         phone = request.form.get('phone')
         address = request.form.get('address')
+        service_type = request.form.get('service_type')  # New
+        experience = request.form.get('experience')  # New
 
-        if not username or not password or not email or not phone:
-            flash("Username, password, email, and phone are required.", "warning")
+        # Basic validation
+        if not username or not password or not email or not phone or not service_type or not experience:
+            flash("All fields are required.", "warning")
             return redirect(url_for('auth.signup_as_professional'))
-        
+
         if not is_valid_email(email):
             flash("Invalid email address.", "warning")
             return redirect(url_for('auth.signup_as_professional'))
@@ -163,7 +162,6 @@ def signup_as_professional():
         if Professional.query.filter_by(email=email).first():
             flash("Email already in use. Please login instead.", "warning")
             return redirect(url_for('auth.signup_as_professional'))
-
         try:
             user = Professional(
                 username=username,
@@ -172,11 +170,13 @@ def signup_as_professional():
                 password_hash=generate_password_hash(password),
                 email=email,
                 phone=phone,
-                address=address
+                address=address,
+                service_type=service_type,
+                experience=int(experience)  # Ensure integer
             )
             db.session.add(user)
             db.session.commit()
-            flash("User registered successfully", "success")
+            flash("Professional registered successfully!", "success")
             return redirect(url_for('auth.login'))
         except SQLAlchemyError:
             db.session.rollback()

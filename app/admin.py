@@ -12,11 +12,34 @@ admin = Blueprint('admin', __name__)
 @login_required
 @role_required('admin')
 def admin_dashboard():
-    customers = Customer.query.all()
-    professionals = Professional.query.all()
+    # Service Request Data
     services = Service.query.all()
-    
-    return render_template('admin_dashboard.html', customers=customers, professionals=professionals, services=services)
+    service_request_data = {
+        "labels": [service.name for service in services],
+        "data": [len(service.requests) for service in services]
+    }
+
+    # Professional Performance Data
+    professionals = Professional.query.all()
+    professional_performance_data = {
+        "labels": [pro.fname + " " + pro.lname for pro in professionals],
+        "data": [round(pro.rating or 0, 2) for pro in professionals]
+    }
+
+    # Customer Engagement Data
+    customers = Customer.query.all()
+    customer_engagement_data = {
+        "labels": [customer.fname + " " + customer.lname for customer in customers],
+        "data": [len(customer.requests) for customer in customers]
+    }
+
+    return render_template(
+        'admin_dashboard.html',
+        service_request_data=service_request_data,
+        professional_performance_data=professional_performance_data,
+        customer_engagement_data=customer_engagement_data
+    )
+
 
 
 @admin.route('/admin/approve-professional/<int:professional_id>')
@@ -25,17 +48,17 @@ def admin_dashboard():
 def approve_professional(professional_id):
     try:
         professional = Professional.query.get(professional_id)
-        if professional:
-            professional.is_verified = True 
+        if professional and not professional.is_verified:
+            professional.is_verified = True
             db.session.commit()
             flash("Professional verified successfully.", "success")
         else:
-            flash("Professional not found.", "warning")
+            flash("Professional not found or already verified.", "warning")
     except SQLAlchemyError:
         db.session.rollback()
-        flash("An error occurred while approving the professional.", "warning")
+        flash("An error occurred while verifying the professional.", "warning")
     
-    return redirect(url_for('admin_dashboard'))
+    return redirect(url_for('admin.admin_dashboard'))
 
 
 @admin.route('/admin/block-user/<int:user_id>/<string:user_type>')
@@ -43,23 +66,20 @@ def approve_professional(professional_id):
 @role_required('admin')
 def block_user(user_id, user_type):
     try:
-        if user_type == 'customer':
-            user = Customer.query.get(user_id)
-        else:
-            user = Professional.query.get(user_id)
-
+        user = Customer.query.get(user_id) if user_type == 'customer' else Professional.query.get(user_id)
         if user:
-            user.is_blocked = not user.is_blocked 
+            user.is_blocked = not user.is_blocked
             db.session.commit()
             status = "unblocked" if not user.is_blocked else "blocked"
-            flash(f"User successfully {status}.", "success")
+            flash(f"User {status} successfully.", "success")
         else:
             flash("User not found.", "warning")
     except SQLAlchemyError:
         db.session.rollback()
-        flash("An error occurred while updating the user.", "warning")
+        flash("An error occurred while blocking/unblocking the user.", "warning")
     
-    return redirect(url_for('admin_dashboard'))
+    return redirect(url_for('admin.admin_dashboard'))
+
 
 
 @admin.route('/admin/create-service', methods=['GET', 'POST'])

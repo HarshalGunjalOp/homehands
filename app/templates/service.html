@@ -1,1 +1,46 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block title %}My Requests{% endblock %} {% block
+body %}
+<h1>My Requests</h1>
+<table class="table table-dark table-hover">
+    <thead>
+        <tr>
+            <th>Request ID</th>
+            <th>Service</th>
+            <th>Status</th>
+            <th>Date of Request</th>
+            <th>Remarks</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for req in requests %}
+        <tr>
+            <td>{{ req.id }}</td>
+            <td>{{ req.service.name }}</td>
+            <td>{{ req.service_status }}</td>
+            <td>{{ req.date_of_request }}</td>
+            <td>{{ req.remarks or "No remarks" }}</td>
+            <td>
+                {% if req.service_status != "closed" %}
+                <a
+                    href="{{ url_for('customer.edit_request', request_id=req.id) }}"
+                    class="btn btn-primary btn-sm"
+                    >Edit</a
+                >
+                {% endif %} {% if req.service_status == "completed" %}
+                <a
+                    href="{{ url_for('customer.close_request', request_id=req.id) }}"
+                    class="btn btn-success btn-sm"
+                    >Close</a
+                >
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6" class="text-center">No requests found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

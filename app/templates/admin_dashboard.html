@@ -1,0 +1,180 @@
+{% extends 'base.html' %} {% block title %}Admin Dashboard{% endblock %} {%
+block body %}
+<h1>Admin Dashboard</h1>
+
+<h2>Customers</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for customer in customers %}
+        <tr>
+            <td>{{ customer.id }}</td>
+            <td>{{ customer.fname }} {{ customer.lname }}</td>
+            <td>{{ customer.email }}</td>
+            <td>{{ 'Blocked' if customer.is_blocked else 'Active' }}</td>
+            <td>
+                <a
+                    href="{{ url_for('admin.block_user', user_id=customer.id, user_type='customer') }}"
+                >
+                    {{ 'Unblock' if customer.is_blocked else 'Block' }}
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Professionals</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Verification</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for professional in professionals %}
+        <tr>
+            <td>{{ professional.id }}</td>
+            <td>{{ professional.fname }} {{ professional.lname }}</td>
+            <td>{{ professional.email }}</td>
+            <td>{{ 'Verified' if professional.is_verified else 'Pending' }}</td>
+            <td>{{ 'Blocked' if professional.is_blocked else 'Active' }}</td>
+            <td>
+                {% if not professional.is_verified %}
+                <a
+                    href="{{ url_for('admin.approve_professional', professional_id=professional.id) }}"
+                    >Verify</a
+                >
+                {% endif %}
+                <a
+                    href="{{ url_for('admin.block_user', user_id=professional.id, user_type='professional') }}"
+                >
+                    {{ 'Unblock' if professional.is_blocked else 'Block' }}
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Services</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Provider</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for service in services %}
+        <tr>
+            <td>{{ service.id }}</td>
+            <td>{{ service.name }}</td>
+            <td>${{ service.price }}</td>
+            <td>{{ service.provider }}</td>
+            <td>
+                <a
+                    href="{{ url_for('admin.update_service', service_id=service.id) }}"
+                    >Edit</a
+                >
+                <a
+                    href="{{ url_for('admin.delete_service', service_id=service.id) }}"
+                    >Delete</a
+                >
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Chart for Service Requests -->
+<h2>Service Requests by Type</h2>
+<canvas id="serviceRequestsChart"></canvas>
+
+<!-- Chart for Professional Performance -->
+<h3>Professional Performance</h3>
+<canvas id="professionalPerformanceChart"></canvas>
+
+<!-- Chart for Customer Engagement -->
+<h3>Customer Engagement</h3>
+<canvas id="customerEngagementChart"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Placeholder data (to be dynamically replaced)
+    const serviceRequestData = JSON.parse(
+        '{{ service_request_data | tojson | safe }}'
+    );
+    const professionalPerformanceData = JSON.parse(
+        '{{ professional_performance_data | tojson | safe }}'
+    );
+    const customerEngagementData = JSON.parse(
+        '{{ customer_engagement_data | tojson | safe }}'
+    );
+
+    // Service Requests Chart
+    new Chart(document.getElementById('serviceRequestsChart'), {
+        type: 'bar',
+        data: {
+            labels: serviceRequestData.labels,
+            datasets: [
+                {
+                    label: 'Requests',
+                    data: serviceRequestData.data,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                },
+            ],
+        },
+    });
+
+    // Professional Performance Chart
+    new Chart(document.getElementById('professionalPerformanceChart'), {
+        type: 'pie',
+        data: {
+            labels: professionalPerformanceData.labels,
+            datasets: [
+                {
+                    label: 'Ratings',
+                    data: professionalPerformanceData.data,
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                },
+            ],
+        },
+    });
+
+    // Customer Engagement Chart
+    new Chart(document.getElementById('customerEngagementChart'), {
+        type: 'line',
+        data: {
+            labels: customerEngagementData.labels,
+            datasets: [
+                {
+                    label: 'Requests Made',
+                    data: customerEngagementData.data,
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    borderWidth: 1,
+                },
+            ],
+        },
+    });
+</script>
+{% endblock %}

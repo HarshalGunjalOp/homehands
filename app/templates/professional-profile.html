@@ -1,0 +1,22 @@
+{% extends 'base.html' %} {% block title %}Professional Profile{% endblock %} {%
+block body %}
+<h1>{{ professional.fname }} {{ professional.lname }}</h1>
+<p>Service Type: {{ professional.service_type }}</p>
+<p>Experience: {{ professional.experience }} years</p>
+<p>Average Rating: {{ professional.rating or 'No ratings yet' }}</p>
+
+<h2>Reviews</h2>
+<ul>
+    {% for review in reviews %}
+    <li>
+        <p><strong>Rating:</strong> {{ review.rating }}/5</p>
+        <p><strong>Comment:</strong> {{ review.comment }}</p>
+        <p>
+            <small><strong>Date:</strong> {{ review.date }}</small>
+        </p>
+    </li>
+    {% else %}
+    <li>No reviews available.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
